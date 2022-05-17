@@ -7,17 +7,89 @@ jobs:
   test:
     docker:
       - image: cimg/base:stable
+
+    working_directory: ~/search-services
+
     # https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
-      - setup_remote_docker
+
+      - setup_remote_docker:
+          version: 20.10.14
+
       - run:
-          # For the moment and for simplicity, we're just validating the
-          # configuration. We will likely want to enhance the test suite
-          # to build and run the services, verify the services are running,
-          # use a test matrix for multiple OS's, etc.
           name: 'Validate configuration'
-          command: docker-compose config --quiet
+          command: docker compose config --quiet
+
+      - run:
+          name: 'Start all containers'
+          command: docker compose up --quiet-pull -d
+
+      # Verify services in (general) order of readiness.
+      # Because we are using remote_docker, all docker-related activities run inside this remote container.
+      # In other words, the services are not directly accessible to our primary container.
+      # Hence, we run dockerize in the same network in order to poll the services
+      # at their endpoints within the docker network (i.e., elasticsearch6:9200 vs. localhost:9200).
+      # Plagiarized shamelessly from:
+      # https://github.com/kelvintaywl/whale-of-a-time/blob/b4c4e6265a368dd745b14867c9096986a98e522e/.circleci/config.yml#L38
+      # See also:
+      # https://circleci.com/docs/2.0/docker-compose/
+      # https://circleci.com/docs/2.0/building-docker-images/#accessing-services
+      - run:
+          name: 'Wait for Redis'
+          command: |
+            docker run --network search-services_default docker.io/jwilder/dockerize \
+              -wait tcp://redis:6379 \
+              -wait-retry-interval 2s \
+              -timeout 30s
+
+      - run:
+          name: 'Wait for Tika'
+          command: |
+            docker run --network search-services_default docker.io/jwilder/dockerize \
+              -wait http://tika:9998 \
+              -wait-retry-interval 2s \
+              -timeout 30s
+
+      - run:
+          name: 'Wait for MySQL'
+          command: |
+            docker run --network search-services_default docker.io/jwilder/dockerize \
+              -wait tcp://mysql:3306 \
+              -wait-retry-interval 2s \
+              -timeout 30s
+
+      - run:
+          name: 'Wait for Elasticsearch 6'
+          command: |
+            docker run --network search-services_default docker.io/jwilder/dockerize \
+              -wait http://elasticsearch6:9200 \
+              -wait-retry-interval 2s \
+              -timeout 90s
+
+      - run:
+          name: 'Wait for Elasticsearch 7'
+          command: |
+            docker run --network search-services_default docker.io/jwilder/dockerize \
+              -wait http://elasticsearch7:9200 \
+              -wait-retry-interval 2s \
+              -timeout 90s
+
+      - run:
+          name: 'Wait for Kibana 6'
+          command: |
+            docker run --network search-services_default docker.io/jwilder/dockerize \
+              -wait http://kibana6:5601 \
+              -wait-retry-interval 2s \
+              -timeout 90s
+
+      - run:
+          name: 'Wait for Kibana 7'
+          command: |
+            docker run --network search-services_default docker.io/jwilder/dockerize \
+              -wait http://kibana7:5601 \
+              -wait-retry-interval 2s \
+              -timeout 90s
 
 # https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:

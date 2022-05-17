@@ -24,13 +24,18 @@ Each repo uses one or more of the following services:
 Database backend required by search-gov.
 
 ### [Elasticsearch](https://www.elastic.co/elasticsearch/)
-All of our applications use Elasticsearch 6 in production for full-text search. Locally, it runs on the default port [9200](http://localhost:9200/). **Elasticsearch 6 is not supported on M1 Macs.** Until all our repos use Elasticsearch 7 in mid-2022, Developers on M1s can run the remaining services:
+Services for Elasticsearch 6 and 7 are both provided here.
+
+#### Elasticsearch 6
+All of our applications use Elasticsearch 6 in production for full-text search. Locally, it runs on the default port [9200](http://localhost:9200/).
+
+**Please note: Elasticsearch 6 is not supported on M1 Macs.** Until all our repos use Elasticsearch 7 in mid-2022, Developers on M1s can run the remaining services with:
 ```
 docker compose up mysql elasticsearch7 redis tika kibana7
 ```
-You will need to update the Elasticsearch host in each repo's `config/secrets.yml` or `config/elasticsearch.yml` file to specify `localhost:9207`.
+You may also need to update the Elasticsearch host in each repo's `config/secrets.yml` or `config/elasticsearch.yml` file to specify `localhost:9207` to point to Elasticsearch 7.
 
-### Elasticsearch 7
+#### Elasticsearch 7
 Currently only used in development, running on port [9207](http://localhost:9207/).
 
 ### [Redis](https://redis.io/)
