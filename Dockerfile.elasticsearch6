@@ -1,0 +1,6 @@
+# searchgov/elasticsearch:6.8.23
+FROM docker.elastic.co/elasticsearch/elasticsearch:6.8.23
+# The following plugins are required for multilingual support in i14y
+RUN elasticsearch-plugin install analysis-kuromoji
+RUN elasticsearch-plugin install analysis-icu
+RUN elasticsearch-plugin install analysis-smartcn

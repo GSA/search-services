@@ -1,0 +1,83 @@
+services:
+  elasticsearch6:
+    image: searchgov/elasticsearch:6.8.23
+    environment:
+      - bootstrap.memory_lock=true
+      - cluster.name=es6-docker-cluster
+      - discovery.type=single-node
+      - xpack.license.self_generated.type=trial
+      - xpack.monitoring.enabled=false
+      - xpack.security.enabled=false
+      - 'ES_JAVA_OPTS=-Xms256m -Xmx256m'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_6_data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+
+  elasticsearch7:
+    image: searchgov/elasticsearch:7.17.3
+    environment:
+      - bootstrap.memory_lock=true
+      - cluster.name=es7-docker-cluster
+      - discovery.type=single-node
+      - xpack.license.self_generated.type=trial
+      - xpack.monitoring.enabled=false
+      - xpack.security.enabled=false
+      - 'ES_JAVA_OPTS=-Xms256m -Xmx256m'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_7_data:/usr/share/elasticsearch/data
+    ports:
+      - 9207:9200
+
+  kibana6:
+    image: docker.elastic.co/kibana/kibana:6.8.23
+    depends_on:
+      - elasticsearch6
+    ports:
+      - 5601:5601
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch6:9200
+
+  kibana7:
+    image: docker.elastic.co/kibana/kibana:7.17.3
+    depends_on:
+      - elasticsearch7
+    ports:
+      - 5607:5601
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch7:9200
+
+  mysql:
+    platform: linux/amd64
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+
+  redis:
+    image: redis:5.0.9
+    ports:
+      - 6379:6379
+
+  # Required by search-gov
+  tika:
+    platform: linux/amd64
+    image: apache/tika:1.24.1
+    ports:
+      - 9998:9998
+
+volumes:
+  db_data:
+  es_6_data:
+  es_7_data:
