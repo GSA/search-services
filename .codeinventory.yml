@@ -1,0 +1,12 @@
+name: search-services
+description: 'A centralized configuration for services used by Search.gov applications'
+license: 'https://creativecommons.org/publicdomain/zero/1.0'
+openSourceProject: 1
+governmentWideReuseProject: 1
+tags:
+    - GSA
+    - Search.gov
+    - Docker
+    - containers
+contact:
+    email: search@gsa.gov
