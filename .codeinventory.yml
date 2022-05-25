@@ -5,6 +5,7 @@ openSourceProject: 1
 governmentWideReuseProject: 1
 tags:
     - GSA
+    - search
     - Search.gov
     - Docker
     - containers
