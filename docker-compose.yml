@@ -1,6 +1,8 @@
 services:
   elasticsearch6:
-    image: searchgov/elasticsearch:6.8.23
+    build:
+      context: ./
+      dockerfile: Dockerfile.elasticsearch6
     environment:
       - bootstrap.memory_lock=true
       - cluster.name=es6-docker-cluster
@@ -19,7 +21,9 @@ services:
       - 9200:9200
 
   elasticsearch7:
-    image: searchgov/elasticsearch:7.17.3
+    build:
+      context: ./
+      dockerfile: Dockerfile.elasticsearch7
     environment:
       - bootstrap.memory_lock=true
       - cluster.name=es7-docker-cluster
