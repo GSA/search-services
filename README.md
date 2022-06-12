@@ -34,7 +34,7 @@ Elasticsearch plugins:
 Some specs depend upon Elasticsearch having a valid trial license. A 30-day trial license is automatically applied when the cluster is initially created. If your license expires, you can rebuild the cluster by [rebuilding the container and its data volume](https://github.com/GSA/search-gov/wiki/Docker-Command-Reference/_edit#recreate-an-elasticsearch-cluster-useful-for-restarting-a-trial-license). 
 
 #### Elasticsearch 6
-All of our applications use Elasticsearch 6 in production for full-text search. Locally, it runs on the default port [9200](http://localhost:9200/). To use a different host (with or without port) or set of hosts, set the `ELASTICSEARCH_HOSTS` environment variable.
+All of our applications use Elasticsearch 6 in production for full-text search. Locally, it runs on the default port [9200](http://localhost:9200/).
 
 **Please note: Elasticsearch 6 is not supported on M1 Macs.** Until all our repos use Elasticsearch 7 in mid-2022, Developers on M1s can run the remaining services with:
 ```
