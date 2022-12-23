@@ -68,14 +68,6 @@ jobs:
               -timeout 90s
 
       - run:
-          name: 'Wait for Kibana 6'
-          command: |
-            docker run --network search-services_default docker.io/jwilder/dockerize \
-              -wait http://kibana6:5601 \
-              -wait-retry-interval 2s \
-              -timeout 90s
-
-      - run:
           name: 'Wait for Kibana 7'
           command: |
             docker run --network search-services_default docker.io/jwilder/dockerize \
