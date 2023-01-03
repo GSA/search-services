@@ -21,7 +21,7 @@ services:
       - 9200:9200
 
   kibana7:
-    image: docker.elastic.co/kibana/kibana:7.17.3
+    image: docker.elastic.co/kibana/kibana:7.17.7
     depends_on:
       - elasticsearch7
     ports:
