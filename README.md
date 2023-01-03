@@ -15,7 +15,7 @@ docker compose up
 ```
 Alternatively, you can run a subset of the services, i.e.:
 ```
-docker compose up mysql elasticsearch7\
+docker compose up mysql elasticsearch7
 ```
 
 Each repo uses one or more of the following services:
