@@ -1,4 +1,5 @@
 services:
+
   elasticsearch7:
     build:
       context: ./
@@ -19,6 +20,8 @@ services:
       - es_7_data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
+    networks:
+      - app-network
 
   kibana7:
     image: docker.elastic.co/kibana/kibana:7.17.7
@@ -28,6 +31,8 @@ services:
       - 5601:5601
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch7:9200
+    networks:
+      - app-network
 
   mysql:
     platform: linux/amd64
@@ -37,12 +42,18 @@ services:
     ports:
       - 3306:3306
     environment:
-      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    networks:
+      - app-network
 
   redis:
     image: redis:6.2
     ports:
       - 6379:6379
+    networks:
+      - app-network
+    command: redis-server --bind "0.0.0.0"
 
   # Required by search-gov
   tika:
@@ -50,7 +61,113 @@ services:
     image: apache/tika:2.4.1
     ports:
       - 9998:9998
+    networks:
+      - app-network
+    profiles:
+      - search-gov
+
+  search-gov:
+    build: 
+      context: ../search-gov/
+      dockerfile: Dockerfile
+    depends_on:
+      - elasticsearch7
+      - kibana7
+      - mysql
+      - redis
+      - tika
+    command: bin/rails server --binding 0.0.0.0
+    ports:
+      - 3100:3000
+    volumes:
+      - ../search-gov/:/usr/src/app
+      - gem_cache:/gems
+    env_file:
+      - ../search-gov/.env/development/app
+    networks:
+      - app-network
+    profiles:
+      - search-gov
+
+  resque-workers:
+    command: 'bundle exec rake environment resque:work'
+    build: 
+      context: ../search-gov/
+    depends_on:
+      - elasticsearch7
+      - mysql
+      - redis
+      - search-gov
+    env_file:
+      - ../search-gov/.env/development/app
+      - ../search-gov/.env/development/resque
+    networks:
+      - app-network
+    profiles:
+      - search-gov
+
+  resque-scheduler:
+    command: 'bundle exec rake resque:scheduler'
+    build:
+      context: ../search-gov/
+    depends_on:
+      - elasticsearch7
+      - mysql
+      - redis
+      - search-gov
+    env_file:
+      - ../search-gov/.env/development/app
+      - ../search-gov/.env/development/resque
+    networks:
+      - app-network
+    profiles:
+      - search-gov
+
+  i14y:
+    build: 
+      context: ../i14y/
+      dockerfile: Dockerfile
+    depends_on:
+      - elasticsearch7
+      - kibana7
+      - mysql
+      - redis
+    command: rails server --binding 0.0.0.0
+    ports:
+      - 3200:3000
+    volumes:
+      - ../i14y/:/usr/src/app
+      - gem_cache:/gems
+    networks:
+      - app-network
+    profiles:
+      - i14y
+  
+  asis:
+    build: 
+      context: ../asis/
+      dockerfile: Dockerfile
+    depends_on:
+      - elasticsearch7
+      - kibana7
+      - mysql
+      - redis
+    command: rails server --binding 0.0.0.0
+    ports:
+      - 3300:3000
+    volumes:
+      - ../asis/:/usr/src/app
+      - gem_cache:/gems
+    networks:
+      - app-network
+    profiles:
+      - asis
 
 volumes:
   db_data:
   es_7_data:
+  gem_cache:
+
+networks:
+  app-network:
+    driver: bridge
