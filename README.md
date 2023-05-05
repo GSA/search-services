@@ -18,6 +18,16 @@ Alternatively, you can run a subset of the services, i.e.:
 docker compose up mysql elasticsearch7
 ```
 
+Each Search.gov application has a separate profile. To run services specific to an application profile:
+```
+docker compose --profile { profile_name } up
+```
+Services matrix:
+| Application/Repo | Command | Profile | Services |
+| --- | --- | --- | --- |
+|  | `docker compose up` | No profile | Runs all services not specific to profile |
+| search-gov |`docker compose --profile search_gov up` | search_gov | MySQL, Elasticsearch, Kibana, Redis, Tika, rails server, resque-worker, resque-scheduler |
+
 Each repo uses one or more of the following services:
 
 ### [MySQL](https://dev.mysql.com/doc/refman/5.7/en/)
