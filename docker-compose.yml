@@ -65,6 +65,7 @@ services:
       - app-network
 
   search-gov:
+    platform: linux/amd64/v8
     build: 
       context: ../search-gov/
       dockerfile: Dockerfile
@@ -76,7 +77,7 @@ services:
       - tika
     command: bin/rails server --binding 0.0.0.0
     ports:
-      - 3100:3100
+      - 3100:3000
     volumes:
       - ../search-gov/:/usr/src/app
       - gem_cache:/gems
@@ -132,7 +133,7 @@ services:
       - redis
     command: rails server --binding 0.0.0.0
     ports:
-      - 3200:3200
+      - 3200:3000
     volumes:
       - ../i14y/:/usr/src/app
       - gem_cache:/gems
@@ -152,7 +153,7 @@ services:
       - redis
     command: rails server --binding 0.0.0.0
     ports:
-      - 3300:3300
+      - 3300:3000
     volumes:
       - ../asis/:/usr/src/app
       - gem_cache:/gems
