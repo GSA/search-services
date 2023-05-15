@@ -1,3 +1,5 @@
+version: '3'
+
 services:
 
   elasticsearch7:
@@ -20,6 +22,11 @@ services:
       - es_7_data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
+    healthcheck:
+      test: curl -u elastic:elastic -s -f elasticsearch7:9200/_cat/health >/dev/null || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - app-network
 
@@ -65,22 +72,27 @@ services:
       - app-network
 
   search-gov:
-    platform: linux/amd64/v8
+    platform: linux/amd64
     build: 
       context: ../search-gov/
       dockerfile: Dockerfile
     depends_on:
-      - elasticsearch7
-      - kibana7
-      - mysql
-      - redis
-      - tika
-    command: bin/rails server --binding 0.0.0.0
+      elasticsearch7:
+        condition: service_healthy
+      mysql:
+        condition: service_started
+      redis:
+        condition: service_started
+      kibana7:
+        condition: service_started
+      tika:
+        condition: service_started
+    command: 'bundle exec rails server --binding 0.0.0.0'
     ports:
       - 3100:3000
     volumes:
       - ../search-gov/:/usr/src/app
-      - gem_cache:/gems
+      - gem_cache_search-gov:/gems
     env_file:
       - ../search-gov/.env/development/app
     networks:
@@ -131,12 +143,12 @@ services:
       - kibana7
       - mysql
       - redis
-    command: rails server --binding 0.0.0.0
+    command: bundle exec rails server --binding 0.0.0.0
     ports:
       - 3200:3000
     volumes:
       - ../i14y/:/usr/src/app
-      - gem_cache:/gems
+      - gem_cache_i14y:/gems
     networks:
       - app-network
     profiles:
@@ -147,16 +159,17 @@ services:
       context: ../asis/
       dockerfile: Dockerfile
     depends_on:
-      - elasticsearch7
-      - kibana7
-      - mysql
-      - redis
-    command: rails server --binding 0.0.0.0
+      elasticsearch7:
+        condition: service_healthy
+    command: bundle exec rails server --binding 0.0.0.0
     ports:
       - 3300:3000
     volumes:
       - ../asis/:/usr/src/app
-      - gem_cache:/gems
+      - ../asis/config/flickr.yml.example:/usr/src/app/config/flickr.yml
+      - gem_cache_asis:/gems
+    env_file:
+      - ../asis/.env/development/app
     networks:
       - app-network
     profiles:
@@ -165,7 +178,9 @@ services:
 volumes:
   db_data:
   es_7_data:
-  gem_cache:
+  gem_cache_i14y:
+  gem_cache_asis:
+  gem_cache_search-gov:
 
 networks:
   app-network:
