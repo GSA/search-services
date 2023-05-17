@@ -1,7 +1,6 @@
 version: '3'
 
 services:
-
   elasticsearch7:
     build:
       context: ./
@@ -87,12 +86,17 @@ services:
         condition: service_started
       tika:
         condition: service_started
+    environment:
+      PIDFILE: /tmp/pids/server.pid
     command: 'bundle exec rails server --binding 0.0.0.0'
     ports:
       - 3100:3000
     volumes:
       - ../search-gov/:/usr/src/app
+      - ../search-gov/config/secrets.yml.dev:/usr/src/app/config/secrets.yml
       - gem_cache_search-gov:/gems
+    tmpfs:
+      - /tmp/pids/
     env_file:
       - ../search-gov/.env/development/app
     networks:
@@ -148,6 +152,7 @@ services:
       - 3200:3000
     volumes:
       - ../i14y/:/usr/src/app
+      - ../i14y/config/secrets_example.yml:/usr/src/app/config/secrets.yml
       - gem_cache_i14y:/gems
     networks:
       - app-network
