@@ -24,7 +24,7 @@ services:
     healthcheck:
       test: curl -u elastic:elastic -s -f elasticsearch7:9200/_cat/health >/dev/null || exit 1
       interval: 5s
-      timeout: 5s
+      timeout: 10s
       retries: 5
     networks:
       - app-network
