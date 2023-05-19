@@ -158,6 +158,7 @@ services:
     environment:
       - ES_HOSTS=elasticsearch7:9200
       - PIDFILE=/tmp/pids/server.pid
+      - DOCKER=true
     expose:
       - 3200
     tmpfs:
@@ -191,6 +192,7 @@ services:
       - /tmp/pids/
     environment:
       - PIDFILE=/tmp/pids/server.pid
+      - DOCKER=true
     volumes:
       - ../asis/:/usr/src/app
       - ../asis/config/flickr.yml:/usr/src/app/config/flickr.yml
