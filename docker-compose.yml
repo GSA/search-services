@@ -97,7 +97,7 @@ services:
       - 3100:3100
     volumes:
       - ../search-gov/:/usr/src/app
-      - ../search-gov/config/secrets.yml.dev:/usr/src/app/config/secrets.yml
+      - ../search-gov/config/secrets.yml:/usr/src/app/config/secrets.yml
       - gem_cache_search-gov:/gems
     tmpfs:
       - /tmp/pids/
@@ -157,13 +157,16 @@ services:
     command: bundle exec rails server --binding 0.0.0.0 -p 3200
     environment:
       - ES_HOSTS=elasticsearch7:9200
+      - PIDFILE=/tmp/pids/server.pid
     expose:
       - 3200
+    tmpfs:
+      - /tmp/pids/
     ports:
       - 3200:3200
     volumes:
       - ../i14y/:/usr/src/app
-      - ../i14y/config/secrets_example.yml:/usr/src/app/config/secrets.yml
+      - ../i14y/config/secrets.yml:/usr/src/app/config/secrets.yml
       - gem_cache_i14y:/gems
     links:
       - elasticsearch7
@@ -184,9 +187,13 @@ services:
       - 3300
     ports:
       - 3300:3300
+    tmpfs:
+      - /tmp/pids/
+    environment:
+      - PIDFILE=/tmp/pids/server.pid
     volumes:
       - ../asis/:/usr/src/app
-      - ../asis/config/flickr.yml.example:/usr/src/app/config/flickr.yml
+      - ../asis/config/flickr.yml:/usr/src/app/config/flickr.yml
       - gem_cache_asis:/gems
     env_file:
       - ../asis/.env/development/app
@@ -202,10 +209,13 @@ services:
       context: ../asis/
     command: bundle exec sidekiq
     depends_on:
-      - elasticsearch7
-      - redis
+      elasticsearch7:
+        condition: service_healthy
+      redis:
+        condition: service_started
     volumes:
       - ../asis/:/usr/src/app
+      - ../asis/config/flickr.yml:/usr/src/app/config/flickr.yml
     env_file:
       - ../asis/.env/development/app
     links:
