@@ -112,7 +112,7 @@ services:
       - search-gov
 
   resque-workers:
-    command: 'bundle exec rake environment resque:work'
+    command: bundle exec rake environment resque:work
     build: 
       context: ../search-gov/
     depends_on:
@@ -129,7 +129,7 @@ services:
       - search-gov
 
   resque-scheduler:
-    command: 'bundle exec rake resque:scheduler'
+    command: bundle exec rake resque:scheduler
     build:
       context: ../search-gov/
     depends_on:
