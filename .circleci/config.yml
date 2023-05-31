@@ -8,7 +8,7 @@ jobs:
     docker:
       - image: cimg/base:stable
 
-    working_directory: ~/search-services
+    working_directory: ~/workspace/search-services
 
     # https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
@@ -16,6 +16,16 @@ jobs:
 
       - setup_remote_docker:
           version: 20.10.14
+
+      - run:
+          name: Create a workspace directory and clone Repositories 
+          command: |
+            sudo mkdir -m 777 /workspace
+            cd ~/workspace
+            git clone https://github.com/GSA/search-gov.git
+            git clone https://github.com/GSA/i14y.git
+            git clone https://github.com/GSA/asis.git
+            cd ~/workspace/search-services
 
       - run:
           name: 'Validate configuration'
@@ -38,7 +48,7 @@ jobs:
       - run:
           name: 'Wait for Redis'
           command: |
-            docker run --network search-services_default docker.io/jwilder/dockerize \
+            docker run --network search-services_app-network docker.io/jwilder/dockerize \
               -wait tcp://redis:6379 \
               -wait-retry-interval 2s \
               -timeout 30s
@@ -46,7 +56,7 @@ jobs:
       - run:
           name: 'Wait for Tika'
           command: |
-            docker run --network search-services_default docker.io/jwilder/dockerize \
+            docker run --network search-services_app-network docker.io/jwilder/dockerize \
               -wait http://tika:9998 \
               -wait-retry-interval 2s \
               -timeout 30s
@@ -54,7 +64,7 @@ jobs:
       - run:
           name: 'Wait for MySQL'
           command: |
-            docker run --network search-services_default docker.io/jwilder/dockerize \
+            docker run --network search-services_app-network docker.io/jwilder/dockerize \
               -wait tcp://mysql:3306 \
               -wait-retry-interval 2s \
               -timeout 30s
@@ -62,7 +72,7 @@ jobs:
       - run:
           name: 'Wait for Elasticsearch 7'
           command: |
-            docker run --network search-services_default docker.io/jwilder/dockerize \
+            docker run --network search-services_app-network docker.io/jwilder/dockerize \
               -wait http://elasticsearch7:9200 \
               -wait-retry-interval 2s \
               -timeout 90s
@@ -70,7 +80,7 @@ jobs:
       - run:
           name: 'Wait for Kibana 7'
           command: |
-            docker run --network search-services_default docker.io/jwilder/dockerize \
+            docker run --network search-services_app-network docker.io/jwilder/dockerize \
               -wait http://kibana7:5601 \
               -wait-retry-interval 2s \
               -timeout 90s
