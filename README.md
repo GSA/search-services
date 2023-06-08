@@ -9,10 +9,16 @@ This repo includes a centralized configuration for services used by Search.gov a
 In order to run the services, you will need to install [Docker](https://www.docker.com/get-started).  We recommend setting the max memory alloted to Docker to 4GB (in Docker Desktop, Preferences > Resources > Advanced). See [the wiki](https://github.com/GSA/search-services/wiki/Docker-Command-Reference) for more documentation on basic Docker commands.
 
 ## Services
-The docker-compose.yml file configures each service. You can run all the services with a single command:
-```
-docker compose up
-```
+The docker-compose.yml file configures each service. You can refer to [Matrix](https://github.com/GSA/search-services#docker-services-matrix) on how to run required services for each application.
+
+## Docker services matrix:
+| Application/Repo | Command | Profile name | Services |
+| --- | --- | --- | --- |
+|  | `docker compose up` | N/A | MySQL, Elasticsearch, Kibana, Redis, Tika |
+| search-gov |`docker compose --profile search-gov up` | search-gov | MySQL, Elasticsearch, Kibana, Redis, Tika, search-gov, resque-worker, resque-scheduler |
+| i14y |`docker compose --profile i14y up` | i14y | MySQL, Elasticsearch, Kibana, Redis, Tika, i14y, resque-worker, resque-scheduler |
+| ASIS |`docker compose --profile asis up` | asis | MySQL, Elasticsearch, Kibana, Redis, Tika, asis, sidekiq |
+
 Alternatively, you can run a subset of the services, i.e.:
 ```
 docker compose up mysql elasticsearch7
