@@ -26,7 +26,7 @@ docker compose up mysql elasticsearch7
 
 Each repo uses one or more of the following services:
 
-### [MySQL](https://dev.mysql.com/doc/refman/5.7/en/)
+### [MySQL](https://dev.mysql.com/doc/refman/8.0/en/)
 Database backend required by search-gov.
 
 ### [Elasticsearch](https://www.elastic.co/elasticsearch/)
