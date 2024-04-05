@@ -89,12 +89,12 @@ services:
       tika:
         condition: service_started
     environment:
-      PIDFILE: /tmp/pids/server.pid
-    command: bundle exec rails server --binding 0.0.0.0 -p 3100
+      SECRET_KEY_BASE: changeme
+      RAILS_MASTER_KEY: 2550fe598ff15393e001468bb52136f7
     expose:
-      - 3100
+      - 3000
     ports:
-      - 3100:3100
+      - 3000:3000
     volumes:
       - ../search-gov/:/usr/src/app
       - ../search-gov/config/secrets.yml:/usr/src/app/config/secrets.yml
@@ -103,9 +103,6 @@ services:
       - /tmp/pids/
     env_file:
       - ../search-gov/.env/development/app
-    links:
-      - i14y
-      - asis
     networks:
       - app-network
     profiles:
@@ -154,10 +151,9 @@ services:
       - kibana7
       - mysql
       - redis
-    command: bundle exec rails server --binding 0.0.0.0 -p 3200
+    command: bin/rails server --binding 0.0.0.0 -p 3200
     environment:
       - ES_HOSTS=elasticsearch7:9200
-      - PIDFILE=/tmp/pids/server.pid
       - DOCKER=true
     expose:
       - 3200
@@ -171,10 +167,12 @@ services:
       - gem_cache_i14y:/gems
     links:
       - elasticsearch7
+      - search-gov
     networks:
       - app-network
     profiles:
       - i14y
+      - search-gov
   
   asis:
     build: 
