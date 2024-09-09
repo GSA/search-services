@@ -97,12 +97,12 @@ services:
       - 3100:3100
     volumes:
       - ../search-gov/:/usr/src/app
-      - ../search-gov/config/secrets.yml:/usr/src/app/config/secrets.yml
       - gem_cache_search-gov:/gems
     tmpfs:
       - /tmp/pids/
     env_file:
-      - ../search-gov/.env/development/app
+      - ../search-gov/.env.development
+      - ../search-gov/.env.test
     links:
       - i14y
       - asis
@@ -121,8 +121,8 @@ services:
       - redis
       - search-gov
     env_file:
-      - ../search-gov/.env/development/app
-      - ../search-gov/.env/development/resque
+      - ../search-gov/.env.development
+      - ../search-gov/.env.test
     networks:
       - app-network
     profiles:
@@ -138,8 +138,8 @@ services:
       - redis
       - search-gov
     env_file:
-      - ../search-gov/.env/development/app
-      - ../search-gov/.env/development/resque
+      - ../search-gov/.env.development
+      - ../search-gov/.env.test
     networks:
       - app-network
     profiles:
