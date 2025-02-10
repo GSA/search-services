@@ -74,9 +74,9 @@ services:
 
   search-gov:
     platform: linux/amd64
-    build: 
+    build:
       context: ../search-gov/
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     depends_on:
       elasticsearch7:
         condition: service_healthy
@@ -88,13 +88,11 @@ services:
         condition: service_started
       tika:
         condition: service_started
-    environment:
-      PIDFILE: /tmp/pids/server.pid
-    command: bundle exec rails server --binding 0.0.0.0 -p 3100
+    command: bin/rails server --binding 0.0.0.0 -p 3000
     expose:
-      - 3100
+      - 3000
     ports:
-      - 3100:3100
+      - 3000:3000
     volumes:
       - ../search-gov/:/usr/src/app
       - gem_cache_search-gov:/gems
@@ -102,19 +100,21 @@ services:
       - /tmp/pids/
     env_file:
       - ../search-gov/.env.development
-      - ../search-gov/.env.test
     links:
       - i14y
       - asis
+      - mysql
+      - redis
     networks:
       - app-network
     profiles:
       - search-gov
 
   resque-workers:
-    command: bundle exec rake environment resque:work
-    build: 
+    command: bin/bundle exec rake environment resque:work
+    build:
       context: ../search-gov/
+      dockerfile: Dockerfile.dev
     depends_on:
       - elasticsearch7
       - mysql
@@ -122,16 +122,21 @@ services:
       - search-gov
     env_file:
       - ../search-gov/.env.development
-      - ../search-gov/.env.test
+    links:
+      - i14y
+      - asis
+      - mysql
+      - redis
     networks:
       - app-network
     profiles:
       - search-gov
 
   resque-scheduler:
-    command: bundle exec rake resque:scheduler
+    command: bin/bundle exec rake resque:scheduler
     build:
       context: ../search-gov/
+      dockerfile: Dockerfile.dev
     depends_on:
       - elasticsearch7
       - mysql
@@ -140,21 +145,26 @@ services:
     env_file:
       - ../search-gov/.env.development
       - ../search-gov/.env.test
+    links:
+      - i14y
+      - asis
+      - mysql
+      - redis
     networks:
       - app-network
     profiles:
       - search-gov
 
   i14y:
-    build: 
+    build:
       context: ../i14y/
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     depends_on:
       - elasticsearch7
       - kibana7
       - mysql
       - redis
-    command: bundle exec rails server --binding 0.0.0.0 -p 3200
+    command: bin/rails server --binding 0.0.0.0 -p 3200
     environment:
       - ES_HOSTS=elasticsearch7:9200
       - PIDFILE=/tmp/pids/server.pid
@@ -175,15 +185,16 @@ services:
       - app-network
     profiles:
       - i14y
-  
+      - search-gov
+
   asis:
-    build: 
+    build:
       context: ../asis/
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     depends_on:
       elasticsearch7:
         condition: service_healthy
-    command: bundle exec rails server --binding 0.0.0.0 -p 3300
+    command: bin/rails server --binding 0.0.0.0 -p 3300
     expose:
       - 3300
     ports:
@@ -198,18 +209,20 @@ services:
       - ../asis/config/flickr.yml:/usr/src/app/config/flickr.yml
       - gem_cache_asis:/gems
     env_file:
-      - ../asis/.env/development/app
+      - ../asis/.env.development
     links:
       - elasticsearch7
     networks:
       - app-network
     profiles:
       - asis
+      - search-gov
 
   sidekiq:
     build:
       context: ../asis/
-    command: bundle exec sidekiq
+      dockerfile: Dockerfile.dev
+    command: bin/bundle exec sidekiq
     depends_on:
       elasticsearch7:
         condition: service_healthy
