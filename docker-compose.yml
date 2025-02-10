@@ -185,7 +185,6 @@ services:
       - app-network
     profiles:
       - i14y
-      - search-gov
 
   asis:
     build:
@@ -216,7 +215,6 @@ services:
       - app-network
     profiles:
       - asis
-      - search-gov
 
   sidekiq:
     build:
