@@ -144,7 +144,6 @@ services:
       - search-gov
     env_file:
       - ../search-gov/.env.development
-      - ../search-gov/.env.test
     links:
       - i14y
       - asis
@@ -208,7 +207,7 @@ services:
       - ../asis/config/flickr.yml:/usr/src/app/config/flickr.yml
       - gem_cache_asis:/gems
     env_file:
-      - ../asis/.env.development
+      - ../search-gov/.env.development
     links:
       - elasticsearch7
     networks:
@@ -230,7 +229,7 @@ services:
       - ../asis/:/usr/src/app
       - ../asis/config/flickr.yml:/usr/src/app/config/flickr.yml
     env_file:
-      - ../asis/.env/development/app
+      - ../search-gov/.env.development
     links:
       - elasticsearch7
     networks:
