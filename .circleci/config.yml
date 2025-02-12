@@ -13,12 +13,10 @@ jobs:
     # https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
-
-      - setup_remote_docker:
-          version: 20.10.14
+      - setup_remote_docker
 
       - run:
-          name: Create a workspace directory and clone Repositories 
+          name: Create a workspace directory and clone Repositories
           command: |
             sudo mkdir -m 777 /workspace
             cd ~/workspace
