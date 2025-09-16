@@ -66,12 +66,12 @@ services:
       context: .
       dockerfile: Dockerfile.opensearch
     environment:
+      - bootstrap.memory_lock=true
       - cluster.name=opensearch-cluster
       - discovery.type=single-node
-      - bootstrap.memory_lock=true
+      - plugins.security.disabled=true
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=S3venDr4gon!
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "plugins.security.disabled=false"
-      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=S3venDr4gon!"
     ulimits:
       memlock:
         soft: -1

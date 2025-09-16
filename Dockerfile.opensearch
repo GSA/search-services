@@ -1,4 +1,4 @@
-FROM opensearchproject/opensearch:latest
+FROM opensearchproject/opensearch:3
 
 RUN /usr/share/opensearch/bin/opensearch-plugin install analysis-kuromoji
 RUN /usr/share/opensearch/bin/opensearch-plugin install analysis-icu
