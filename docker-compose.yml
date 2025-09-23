@@ -97,9 +97,10 @@ services:
   opensearch-dashboards:
     image: opensearchproject/opensearch-dashboards:3
     ports:
-      - 5701:5701
+      - 5701:5601
     environment:
       OPENSEARCH_HOSTS: '["http://opensearch:9200"]'
+      DISABLE_SECURITY_DASHBOARDS_PLUGIN: true
     networks:
       - app-network
     depends_on:
