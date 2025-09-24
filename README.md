@@ -15,7 +15,7 @@ The docker-compose.yml file configures each service. You can refer to [Matrix](h
 | Application/Repo | Command | Profile name | Services |
 | --- | --- | --- | --- |
 |  | `docker compose up` | N/A | MySQL, Elasticsearch, Kibana, Redis, Tika |
-| search-gov |`docker compose --profile search-gov up` | search-gov | MySQL, Elasticsearch, Kibana, Redis, Tika, search-gov, resque-worker, resque-scheduler |
+| search-gov |`docker compose --profile search-gov up` | search-gov | MySQL, Elasticsearch, Kibana, Redis, Tika, search-gov, resque-worker, resque-scheduler, spider-scheduler, spider-sitemap |
 | i14y |`docker compose --profile i14y up` | i14y | MySQL, Elasticsearch, Kibana, Redis, Tika, i14y, resque-worker, resque-scheduler |
 | ASIS |`docker compose --profile asis up` | asis | MySQL, Elasticsearch, Kibana, Redis, Tika, asis, sidekiq |
 
