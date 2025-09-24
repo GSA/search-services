@@ -60,6 +60,11 @@ services:
     networks:
       - app-network
     command: redis-server --bind "0.0.0.0"
+    healthcheck:
+      test: redis-cli ping >/dev/null || exit 1
+      interval: 1s
+      timeout: 3s
+      retries: 5
 
   opensearch:
     build:
@@ -281,6 +286,34 @@ services:
       - app-network
     profiles:
       - asis
+
+  spider:
+    &spider
+    build:
+      context: ../searchgov-spider
+      dockerfile: DockerFile.dev
+    env_file:
+      - ../searchgov-spider/.env.development
+    environment:
+      PYTHONPATH: /usr/src/searchgov-spider
+    depends_on:
+      redis:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+      elasticsearch7:
+        condition: service_healthy
+    network_mode: host
+    profiles:
+      - search-gov
+
+  spider-scheduler:
+    <<: *spider
+    command: python search_gov_crawler/scrapy_scheduler.py
+
+  spider-sitemap:
+    <<: *spider
+    command: python search_gov_crawler/run_sitemap_monitor.py
 
 volumes:
   db_data:
