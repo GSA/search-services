@@ -2,6 +2,7 @@
 This repo includes a centralized configuration for services used by Search.gov applications, including:
 
 - [search-gov](https://github.com/GSA/search-gov)
+- [spider](https://github.com/GSA-TTS/searchgov-spider)
 - [i14y](https://github.com/GSA/i14y)
 - [ASIS](https://github.com/GSA/asis)
 
