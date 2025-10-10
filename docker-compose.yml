@@ -76,7 +76,7 @@ services:
       - discovery.type=single-node
       - plugins.security.disabled=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=S3venDr4gon!
+      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=S3venDr4gon!"
     ulimits:
       memlock:
         soft: -1
@@ -111,16 +111,7 @@ services:
     depends_on:
       - opensearch
 
-  # Required by search-gov
-  tika:
-    platform: linux/amd64
-    image: apache/tika:2.4.1
-    ports:
-      - 9998:9998
-    networks:
-      - app-network
-
-  search-gov:
+  search-gov: &search-gov
     platform: linux/amd64
     build:
       context: ../search-gov/
@@ -132,10 +123,6 @@ services:
         condition: service_started
       redis:
         condition: service_started
-      kibana7:
-        condition: service_started
-      tika:
-        condition: service_started
       opensearch:
         condition: service_started
     command: bin/rails server --binding 0.0.0.0 -p 3000
@@ -146,63 +133,24 @@ services:
     volumes:
       - ../search-gov/:/usr/src/app
       - gem_cache_search-gov:/gems
-    tmpfs:
-      - /tmp/pids/
     env_file:
       - ../search-gov/.env.development
-    links:
-      - i14y
-      - asis
-      - mysql
-      - redis
-    networks:
-      - app-network
+    environment:
+      DB_HOST: host.docker.internal
+      ES_HOSTS: http://host.docker.internal:9200
+      OPENSEARCH_HOST: http://host.docker.internal:9300
+      REDIS_SYSTEM_URL: redis://host.docker.internal:6379
+      REDIS_URL: redis://host.docker.internal:6379
     profiles:
       - search-gov
 
   resque-workers:
+    <<: *search-gov
     command: bin/bundle exec rake environment resque:work
-    build:
-      context: ../search-gov/
-      dockerfile: Dockerfile.dev
-    depends_on:
-      - elasticsearch7
-      - mysql
-      - redis
-      - search-gov
-    env_file:
-      - ../search-gov/.env.development
-    links:
-      - i14y
-      - asis
-      - mysql
-      - redis
-    networks:
-      - app-network
-    profiles:
-      - search-gov
 
   resque-scheduler:
+    <<: *search-gov
     command: bin/bundle exec rake resque:scheduler
-    build:
-      context: ../search-gov/
-      dockerfile: Dockerfile.dev
-    depends_on:
-      - elasticsearch7
-      - mysql
-      - redis
-      - search-gov
-    env_file:
-      - ../search-gov/.env.development
-    links:
-      - i14y
-      - asis
-      - mysql
-      - redis
-    networks:
-      - app-network
-    profiles:
-      - search-gov
 
   i14y:
     build:
@@ -232,63 +180,8 @@ services:
       - elasticsearch7
     networks:
       - app-network
-    profiles:
-      - i14y
 
-  asis:
-    build:
-      context: ../asis/
-      dockerfile: Dockerfile.dev
-    depends_on:
-      elasticsearch7:
-        condition: service_healthy
-    command: bin/rails server --binding 0.0.0.0 -p 3300
-    expose:
-      - 3300
-    ports:
-      - 3300:3300
-    tmpfs:
-      - /tmp/pids/
-    environment:
-      - PIDFILE=/tmp/pids/server.pid
-      - DOCKER=true
-    volumes:
-      - ../asis/:/usr/src/app
-      - ../asis/config/flickr.yml:/usr/src/app/config/flickr.yml
-      - gem_cache_asis:/gems
-    env_file:
-      - ../search-gov/.env.development
-    links:
-      - elasticsearch7
-    networks:
-      - app-network
-    profiles:
-      - asis
-
-  sidekiq:
-    build:
-      context: ../asis/
-      dockerfile: Dockerfile.dev
-    command: bin/bundle exec sidekiq
-    depends_on:
-      elasticsearch7:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    volumes:
-      - ../asis/:/usr/src/app
-      - ../asis/config/flickr.yml:/usr/src/app/config/flickr.yml
-    env_file:
-      - ../search-gov/.env.development
-    links:
-      - elasticsearch7
-    networks:
-      - app-network
-    profiles:
-      - asis
-
-  spider:
-    &spider
+  spider: &spider
     build:
       context: ../searchgov-spider
       dockerfile: DockerFile.dev
@@ -320,7 +213,6 @@ volumes:
   es_7_data:
   opensearch_data:
   gem_cache_i14y:
-  gem_cache_asis:
   gem_cache_search-gov:
 
 networks:
