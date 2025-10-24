@@ -141,7 +141,13 @@ services:
     networks:
       - app-network
     depends_on:
-      - opensearch
+      opensearch:
+        condition: service_healthy
+    healthcheck:
+      test: curl -s -f http://localhost:5601/api/status >/dev/null || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 10
 
   search-gov:
     <<: *search-gov-base
