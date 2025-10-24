@@ -18,9 +18,9 @@ x-search-gov-base: &search-gov-base
     - ../search-gov/:/usr/src/app
     - gem_cache_search-gov:/gems
   environment:
-    DB_HOST: host.docker.internal
-    ES_HOSTS: http://host.docker.internal:9200
-    OPENSEARCH_SEARCH_HOST: http://host.docker.internal:9300
+    DB_HOST: mysql
+    ES_HOSTS: http://elasticsearch7:9200
+    OPENSEARCH_SEARCH_HOST: http://opensearch:9200
     REDIS_SESSION_HOST: redis
     REDIS_SYSTEM_URL: redis://redis:6379
   env_file:

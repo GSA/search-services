@@ -76,6 +76,22 @@ jobs:
               -wait-retry-interval 2s \
               -timeout 90s
 
+      - run:
+          name: "Wait for OpenSearch"
+          command: |
+            docker run --network search-services_app-network docker.io/jwilder/dockerize \
+              -wait http://opensearch:9200 \
+              -wait-retry-interval 2s \
+              -timeout 90s
+
+      - run:
+          name: "Wait for OpenSearch Dashboards"
+          command: |
+            docker run --network search-services_app-network docker.io/jwilder/dockerize \
+              -wait http://opensearch-dashboards:5601 \
+              -wait-retry-interval 2s \
+              -timeout 90s
+
 # https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   build_and_test:
