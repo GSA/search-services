@@ -1,3 +1,35 @@
+x-search-gov-base: &search-gov-base
+  platform: linux/amd64
+  build:
+    context: ../search-gov/
+    dockerfile: Dockerfile.dev
+  depends_on:
+    elasticsearch7:
+      condition: service_healthy
+    mysql:
+      condition: service_started
+    redis:
+      condition: service_healthy
+    kibana7:
+      condition: service_started
+    opensearch:
+      condition: service_started
+  volumes:
+    - ../search-gov/:/usr/src/app
+    - gem_cache_search-gov:/gems
+  environment:
+    DB_HOST: host.docker.internal
+    ES_HOSTS: http://host.docker.internal:9200
+    OPENSEARCH_SEARCH_HOST: http://host.docker.internal:9300
+    REDIS_SESSION_HOST: redis
+    REDIS_SYSTEM_URL: redis://redis:6379
+  env_file:
+    - ../search-gov/.env.development
+  profiles:
+    - search-gov
+  networks:
+    - app-network
+
 services:
   elasticsearch7:
     build:
@@ -111,45 +143,20 @@ services:
     depends_on:
       - opensearch
 
-  search-gov: &search-gov
-    platform: linux/amd64
-    build:
-      context: ../search-gov/
-      dockerfile: Dockerfile.dev
-    depends_on:
-      elasticsearch7:
-        condition: service_healthy
-      mysql:
-        condition: service_started
-      redis:
-        condition: service_started
-      opensearch:
-        condition: service_started
+  search-gov:
+    <<: *search-gov-base
     command: bin/rails server --binding 0.0.0.0 -p 3000
     expose:
       - 3000
     ports:
       - 3000:3000
-    volumes:
-      - ../search-gov/:/usr/src/app
-      - gem_cache_search-gov:/gems
-    env_file:
-      - ../search-gov/.env.development
-    environment:
-      DB_HOST: host.docker.internal
-      ES_HOSTS: http://host.docker.internal:9200
-      OPENSEARCH_HOST: http://host.docker.internal:9300
-      REDIS_SYSTEM_URL: redis://host.docker.internal:6379
-      REDIS_URL: redis://host.docker.internal:6379
-    profiles:
-      - search-gov
 
   resque-workers:
-    <<: *search-gov
+    <<: *search-gov-base
     command: bin/bundle exec rake environment resque:work
 
   resque-scheduler:
-    <<: *search-gov
+    <<: *search-gov-base
     command: bin/bundle exec rake resque:scheduler
 
   i14y:
@@ -180,6 +187,8 @@ services:
       - elasticsearch7
     networks:
       - app-network
+    profiles:
+      - search-gov
 
   spider: &spider
     build:

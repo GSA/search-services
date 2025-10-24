@@ -27,11 +27,11 @@ jobs:
             cd ~/workspace/search-services
 
       - run:
-          name: 'Validate configuration'
+          name: "Validate configuration"
           command: docker compose config --quiet
 
       - run:
-          name: 'Start all containers'
+          name: "Start all containers"
           command: docker compose up --quiet-pull -d
 
       # Verify services in (general) order of readiness.
@@ -45,7 +45,7 @@ jobs:
       # https://circleci.com/docs/2.0/docker-compose/
       # https://circleci.com/docs/2.0/building-docker-images/#accessing-services
       - run:
-          name: 'Wait for Redis'
+          name: "Wait for Redis"
           command: |
             docker run --network search-services_app-network docker.io/jwilder/dockerize \
               -wait tcp://redis:6379 \
@@ -53,15 +53,7 @@ jobs:
               -timeout 30s
 
       - run:
-          name: 'Wait for Tika'
-          command: |
-            docker run --network search-services_app-network docker.io/jwilder/dockerize \
-              -wait http://tika:9998 \
-              -wait-retry-interval 2s \
-              -timeout 30s
-
-      - run:
-          name: 'Wait for MySQL'
+          name: "Wait for MySQL"
           command: |
             docker run --network search-services_app-network docker.io/jwilder/dockerize \
               -wait tcp://mysql:3306 \
@@ -69,7 +61,7 @@ jobs:
               -timeout 30s
 
       - run:
-          name: 'Wait for Elasticsearch 7'
+          name: "Wait for Elasticsearch 7"
           command: |
             docker run --network search-services_app-network docker.io/jwilder/dockerize \
               -wait http://elasticsearch7:9200 \
@@ -77,7 +69,7 @@ jobs:
               -timeout 90s
 
       - run:
-          name: 'Wait for Kibana 7'
+          name: "Wait for Kibana 7"
           command: |
             docker run --network search-services_app-network docker.io/jwilder/dockerize \
               -wait http://kibana7:5601 \
