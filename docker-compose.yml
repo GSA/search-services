@@ -221,7 +221,8 @@ services:
 
   spider-sitemap:
     <<: *spider
-    command: python search_gov_crawler/run_sitemap_monitor.py
+    working_dir: /usr/src/searchgov-spider/search_gov_crawler
+    command: python run_sitemap_monitor.py
 
 volumes:
   db_data:
