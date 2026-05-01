@@ -209,8 +209,6 @@ services:
         condition: service_healthy
       opensearch:
         condition: service_healthy
-      elasticsearch7:
-        condition: service_healthy
     network_mode: host
     profiles:
       - search-gov
