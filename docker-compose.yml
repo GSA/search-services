@@ -222,6 +222,10 @@ services:
     working_dir: /usr/src/searchgov-spider/search_gov_crawler
     command: python run_sitemap_monitor.py
 
+  spider-freshness-checker:
+    <<: *spider
+    command: python search_gov_crawler/check_freshness.py
+
 volumes:
   db_data:
   es_7_data:
