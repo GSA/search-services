@@ -21,7 +21,6 @@ jobs:
             sudo mkdir -m 777 /workspace
             cd ~/workspace
             git clone https://github.com/GSA/search-gov.git
-            git clone https://github.com/GSA/i14y.git
             git clone https://github.com/GSA-TTS/searchgov-spider.git
             cd ~/workspace/search-services
 
