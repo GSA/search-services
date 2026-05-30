@@ -50,7 +50,7 @@ services:
     volumes:
       - es_7_data:/usr/share/elasticsearch/data
     ports:
-      - 9200:9200
+      - ${ES7_PORT:-9201}:9200
     expose:
       - 9200
     healthcheck:
@@ -88,7 +88,7 @@ services:
   redis:
     image: redis:6.2
     ports:
-      - 6379:6379
+      - 6381:6379
     networks:
       - app-network
     command: redis-server --bind "0.0.0.0"
@@ -155,7 +155,7 @@ services:
     expose:
       - 3000
     ports:
-      - 3000:3000
+      - ${SEARCH_GOV_PORT:-3000}:3000
 
   resque-workers:
     <<: *search-gov-base
@@ -164,37 +164,6 @@ services:
   resque-scheduler:
     <<: *search-gov-base
     command: bin/bundle exec rake resque:scheduler
-
-  i14y:
-    build:
-      context: ../i14y/
-      dockerfile: Dockerfile.dev
-    depends_on:
-      - elasticsearch7
-      - kibana7
-      - mysql
-      - redis
-    command: bin/rails server --binding 0.0.0.0 -p 3200
-    environment:
-      - ES_HOSTS=elasticsearch7:9200
-      - PIDFILE=/tmp/pids/server.pid
-      - DOCKER=true
-    expose:
-      - 3200
-    tmpfs:
-      - /tmp/pids/
-    ports:
-      - 3200:3200
-    volumes:
-      - ../i14y/:/usr/src/app
-      - ../i14y/config/secrets.yml:/usr/src/app/config/secrets.yml
-      - gem_cache_i14y:/gems
-    links:
-      - elasticsearch7
-    networks:
-      - app-network
-    profiles:
-      - search-gov
 
   spider: &spider
     build:
@@ -230,7 +199,6 @@ volumes:
   db_data:
   es_7_data:
   opensearch_data:
-  gem_cache_i14y:
   gem_cache_search-gov:
 
 networks:
