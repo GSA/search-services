@@ -3,7 +3,6 @@ This repo includes a centralized configuration for services used by Search.gov a
 
 - [search-gov](https://github.com/GSA/search-gov)
 - [spider](https://github.com/GSA-TTS/searchgov-spider)
-- [i14y](https://github.com/GSA/i14y)
 
 ## Prerequisites
 In order to run the services, you will need to install [Docker](https://www.docker.com/get-started).  We recommend setting the max memory alloted to Docker to 4GB (in Docker Desktop, Preferences > Resources > Advanced). See [the wiki](https://github.com/GSA/search-services/wiki/Docker-Command-Reference) for more documentation on basic Docker commands.
@@ -15,7 +14,7 @@ The docker-compose.yml file configures each service. You can refer to [Matrix](h
 | Application/Repo | Command | Profile name | Services |
 | --- | --- | --- | --- |
 |  | `docker compose up` | N/A | MySQL, Elasticsearch, Kibana, Redis, OpenSearch, OpenSearch Dashboards |
-| search-gov |`docker compose --profile search-gov up` | search-gov | MySQL, Elasticsearch, Kibana, Redis, OpenSearch, OpenSearch Dashboards, search-gov, i14y, resque-workers, resque-scheduler, spider, spider-scheduler, spider-sitemap |
+| search-gov |`docker compose --profile search-gov up` | search-gov | MySQL, Elasticsearch, Kibana, Redis, OpenSearch, OpenSearch Dashboards, search-gov, resque-workers, resque-scheduler, spider, spider-scheduler, spider-sitemap |
 
 Alternatively, you can run a subset of the services, i.e.:
 ```
