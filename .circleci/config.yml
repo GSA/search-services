@@ -36,7 +36,7 @@ jobs:
       # Because we are using remote_docker, all docker-related activities run inside this remote container.
       # In other words, the services are not directly accessible to our primary container.
       # Hence, we run dockerize in the same network in order to poll the services
-      # at their endpoints within the docker network (i.e., elasticsearch6:9200 vs. localhost:9200).
+      # at their endpoints within the docker network (i.e., opensearch:9200 vs. localhost:9300).
       # Plagiarized shamelessly from:
       # https://github.com/kelvintaywl/whale-of-a-time/blob/b4c4e6265a368dd745b14867c9096986a98e522e/.circleci/config.yml#L38
       # See also:
@@ -57,22 +57,6 @@ jobs:
               -wait tcp://mysql:3306 \
               -wait-retry-interval 2s \
               -timeout 30s
-
-      - run:
-          name: "Wait for Elasticsearch 7"
-          command: |
-            docker run --network search-services_app-network docker.io/jwilder/dockerize \
-              -wait http://elasticsearch7:9200 \
-              -wait-retry-interval 2s \
-              -timeout 90s
-
-      - run:
-          name: "Wait for Kibana 7"
-          command: |
-            docker run --network search-services_app-network docker.io/jwilder/dockerize \
-              -wait http://kibana7:5601 \
-              -wait-retry-interval 2s \
-              -timeout 90s
 
       - run:
           name: "Wait for OpenSearch"
