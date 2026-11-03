@@ -86,7 +86,7 @@ services:
       - app-network
 
   opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:3
+    image: opensearchproject/opensearch-dashboards:3.7.0
     ports:
       - 5701:5601
     environment:
