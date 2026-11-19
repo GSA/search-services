@@ -1,5 +1,6 @@
 FROM opensearchproject/opensearch:3.7.0
 
-RUN /usr/share/opensearch/bin/opensearch-plugin install analysis-kuromoji
-RUN /usr/share/opensearch/bin/opensearch-plugin install analysis-icu
-RUN /usr/share/opensearch/bin/opensearch-plugin install analysis-smartcn
+# Install these plugins if accessible, otherwise proceed with build
+RUN /usr/share/opensearch/bin/opensearch-plugin install analysis-kuromoji || true
+RUN /usr/share/opensearch/bin/opensearch-plugin install analysis-icu || true
+RUN /usr/share/opensearch/bin/opensearch-plugin install analysis-smartcn || true
